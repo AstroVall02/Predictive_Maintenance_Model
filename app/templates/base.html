@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Predictive Maintenance{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark px-3">
+        <span class="navbar-brand mb-0 h1">Predictive Maintenance - Heavy Medical Infrastructure</span>
+        {% if session.get('role') %}
+        <div class="d-flex align-items-center">
+            <span class="text-white me-3">{{ session.get('display_name') }} ({{ session.get('role') }})</span>
+            <a id="logout-link" class="btn btn-outline-light btn-sm" href="{{ url_for('logout') }}">Logout</a>
+        </div>
+        {% endif %}
+    </nav>
+
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div id="flash-{{ category }}" class="alert
+                        {% if category == 'alert' %}alert-danger
+                        {% elif category == 'error' %}alert-warning
+                        {% else %}alert-success{% endif %}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

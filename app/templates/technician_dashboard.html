@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Technician Dashboard{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">My Assigned Work Orders</h5>
+        {% if assigned|length == 0 %}
+        <p class="text-muted" id="no-work-orders-msg">No work orders assigned to you right now.</p>
+        {% else %}
+        <table class="table" id="work-orders-table">
+            <thead>
+                <tr>
+                    <th>Maintenance ID</th><th>Equipment</th><th>Predicted RUL</th>
+                    <th>Alert Time</th><th>Status</th><th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in assigned %}
+                <tr class="work-order-row" data-maintenance-id="{{ m.maintenance_id }}">
+                    <td>{{ m.maintenance_id }}</td>
+                    <td>{{ m.equipment_id }}</td>
+                    <td>{{ '%.1f'|format(m.predicted_rul) }}</td>
+                    <td>{{ m.alert_time }}</td>
+                    <td><span class="badge bg-warning">{{ m.work_order_status }}</span></td>
+                    <td>
+                        <form method="POST" action="{{ url_for('complete_work_order', maintenance_id=m.maintenance_id) }}">
+                            <button type="submit" class="btn btn-success btn-sm complete-btn" id="complete-btn-{{ m.maintenance_id }}">
+                                Mark Complete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

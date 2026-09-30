@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Biomedical Manager Dashboard{% endblock %}
+{% block content %}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Active Predictive Model</h5>
+        {% if model_info %}
+        <div id="model-info-panel">
+            <p class="mb-1"><strong>Version:</strong> {{ model_info.version }} ({{ model_info.algorithm }})</p>
+            <p class="mb-1"><strong>RMSE:</strong> {{ '%.2f'|format(model_info.rmse) }} cycles</p>
+            <p class="mb-1"><strong>MAE:</strong> {{ '%.2f'|format(model_info.mae) }} cycles</p>
+            <p class="mb-0"><strong>R²:</strong> {{ '%.4f'|format(model_info.r2_score) }}</p>
+        </div>
+        {% else %}
+        <p class="text-muted" id="no-model-msg">No model registered yet. Run ml_model.py to train and register one.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">All Maintenance Alerts &amp; Work Orders</h5>
+        <table class="table table-sm" id="all-maintenance-table">
+            <thead>
+                <tr>
+                    <th>ID</th><th>Equipment</th><th>Predicted RUL</th>
+                    <th>Technician</th><th>Status</th><th>Alert Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in maintenance %}
+                <tr class="maintenance-row" data-maintenance-id="{{ m.maintenance_id }}">
+                    <td>{{ m.maintenance_id }}</td>
+                    <td>{{ m.equipment_id }}</td>
+                    <td>{{ '%.1f'|format(m.predicted_rul) }}</td>
+                    <td>{{ m.technician_name or '-' }}</td>
+                    <td><span class="badge {% if m.work_order_status == 'completed' %}bg-success{% else %}bg-warning{% endif %}">{{ m.work_order_status }}</span></td>
+                    <td>{{ m.alert_time }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Recent Telemetry (Fleet-wide)</h5>
+        <table class="table table-sm" id="fleet-telemetry-table">
+            <thead>
+                <tr><th>ID</th><th>Equipment</th><th>Type</th><th>Cycle</th><th>Predicted RUL</th></tr>
+            </thead>
+            <tbody>
+                {% for r in telemetry %}
+                <tr>
+                    <td>{{ r.telemetry_id }}</td>
+                    <td>{{ r.equipment_id }}</td>
+                    <td>{{ r.equipment_type }}</td>
+                    <td>{{ r.cycle }}</td>
+                    <td>{{ '%.1f'|format(r.predicted_rul) if r.predicted_rul is not none else '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

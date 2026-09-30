@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-3">Login</h4>
+
+                <ul class="nav nav-tabs mb-3" id="login-tabs">
+                    <li class="nav-item">
+                        <button class="nav-link active" id="tab-staff" data-bs-toggle="tab" data-bs-target="#pane-staff" type="button">IoT Engineer / Manager</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" id="tab-technician" data-bs-toggle="tab" data-bs-target="#pane-technician" type="button">Technician</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="pane-staff">
+                        <form method="POST" action="{{ url_for('login') }}">
+                            <input type="hidden" name="login_type" value="staff">
+                            <div class="mb-3">
+                                <label class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username-input" name="username" placeholder="iot_engineer or manager">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password-input" name="password">
+                            </div>
+                            <button type="submit" id="login-btn" class="btn btn-primary w-100">Log in</button>
+                        </form>
+                    </div>
+
+                    <div class="tab-pane fade" id="pane-technician">
+                        <form method="POST" action="{{ url_for('login') }}">
+                            <input type="hidden" name="login_type" value="technician">
+                            <div class="mb-3">
+                                <label class="form-label">Select your name</label>
+                                <select class="form-select" id="technician-select" name="technician_id">
+                                    <option value="">-- choose technician --</option>
+                                    {% for t in technicians %}
+                                    <option value="{{ t.technician_id }}">{{ t.name }} ({{ t.specialization }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" id="technician-login-btn" class="btn btn-primary w-100">Log in</button>
+                        </form>
+                    </div>
+                </div>
+
+                <hr>
+                <small class="text-muted">
+                    Demo credentials: <code>iot_engineer / iot123</code> or <code>manager / mgr123</code>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
