@@ -160,6 +160,14 @@ uv pip install -r requirements.txt
 
 ## Running the Application
 
+### Option 1: One-Click Run (Windows)
+Simply double-click [`run.bat`](file:///c:/Users/Abhinandan%20Singh/Desktop/COLLEGE%20STUFF/4SEM/miniproj/Predictive_Maintenance_Model/run.bat) or run from terminal:
+```cmd
+run.bat
+```
+*(This automatically checks your virtual environment, dependencies, dataset/model/db prerequisites, starts Flask, and opens `http://127.0.0.1:5000` in your browser).*
+
+### Option 2: Manual Run
 Run these **in order** from the `app/` directory — each step generates a file the next one depends on:
 
 ```bash
@@ -187,22 +195,33 @@ Then open **http://127.0.0.1:5000** in a browser.
 
 10 test cases covering input validation branches, RUL-threshold boundaries, and the full analyse→alert→schedule pipeline, using an isolated temporary database:
 
-```bash
-cd app
-pytest ../tests/test_white_box.py -v
-```
+- **Windows batch runner**: Double-click [`test_whitebox.bat`](file:///c:/Users/Abhinandan%20Singh/Desktop/COLLEGE%20STUFF/4SEM/miniproj/Predictive_Maintenance_Model/test_whitebox.bat) or run:
+  ```cmd
+  test_whitebox.bat
+  ```
+- **Manual command**:
+  ```bash
+  cd app
+  pytest ../tests/test_white_box.py -v
+  ```
 
 ### Black-box tests (Selenium)
 
 10 test cases driving the real application through a browser — login (valid/invalid/role-restricted), submitting healthy/degraded readings and verifying the resulting alert UI, and a technician completing a work order end-to-end.
 
-```bash
-# Terminal 1 — keep the app running
-cd app && python3 app.py
+- **Windows batch runner** (automatically starts background Flask server if not already running):
+  Double-click [`test_blackbox.bat`](file:///c:/Users/Abhinandan%20Singh/Desktop/COLLEGE%20STUFF/4SEM/miniproj/Predictive_Maintenance_Model/test_blackbox.bat) or run:
+  ```cmd
+  test_blackbox.bat
+  ```
+- **Manual command**:
+  ```bash
+  # Terminal 1 — keep the app running
+  cd app && python3 app.py
 
-# Terminal 2
-pytest tests/test_black_box_selenium.py -v
-```
+  # Terminal 2
+  pytest tests/test_black_box.py -v
+  ```
 
 Selenium 4.6+ auto-manages the matching ChromeDriver — no manual driver install needed, as long as Chrome is installed.
 
