@@ -1,23 +1,17 @@
 """
-Module 6b: Black-Box Test Cases (Selenium)
-----------------------------------------------
-Black-box testing = we don't look at or rely on the internal code;
-we only interact with the running application the way a real user
-would, through the browser, and assert on what's visible on screen.
+Black-Box Test Cases (Selenium)
 
-PREREQUISITES (run these on your own machine, not in a sandbox):
+PREREQUISITES
     1. Google Chrome must be installed.
-    2. In one terminal, start the app fresh:
-           cd predictive-maintenance/app
+    2. In one terminal, start the app:
+           cd SEM_project/app
            python3 database.py      # reset DB + seed technicians
            python3 ml_model.py      # retrain + register model
            python3 app.py           # starts Flask on http://127.0.0.1:5000
     3. In another terminal:
            pip install selenium pytest --break-system-packages   (or via uv)
-           pytest tests/test_black_box_selenium.py -v
+           pytest tests/test_black_box.py -v
 
-Selenium 4.6+ auto-downloads the matching ChromeDriver the first time
-you run this, so no manual driver setup is needed.
 """
 
 import time
@@ -35,8 +29,7 @@ BASE_URL = "http://127.0.0.1:5000"
 @pytest.fixture
 def driver():
     options = webdriver.ChromeOptions()
-    # comment out the next line if you want to watch the browser run
-    options.add_argument("--headless=new")
+#    options.add_argument("--headless=new")
     d = webdriver.Chrome(options=options)
     d.implicitly_wait(3)
     yield d
@@ -104,7 +97,7 @@ def login_as_manager(driver):
 def login_as_technician(driver, specialization_substring="MRI"):
     """
     Switches to the technician tab, waits for Bootstrap's JS to have
-    actually wired up the tab (not just for the page to have loaded --
+    actually wired up the tab (not just for the page to have loaded since
     the CDN script can still be downloading at that point), then picks
     a technician whose name/specialization contains the given substring.
     """
@@ -149,9 +142,8 @@ def submit_reading(driver, **field_overrides):
     js_click(driver, driver.find_element(By.ID, "submit-reading-btn"))
 
 
-# ---------------------------------------------------------------------
 # 1-2: Login page basics
-# ---------------------------------------------------------------------
+
 def test_01_login_page_loads(driver):
     driver.get(f"{BASE_URL}/login")
     assert "Login" in driver.title or driver.find_element(By.ID, "login-btn")
@@ -168,9 +160,8 @@ def test_02_invalid_staff_login_shows_error(driver):
     assert "Invalid username or password" in error.text
 
 
-# ---------------------------------------------------------------------
 # 3-4: Role-based access control
-# ---------------------------------------------------------------------
+
 def test_03_iot_engineer_login_reaches_dashboard(driver):
     login_as_iot_engineer(driver)
     heading = WebDriverWait(driver, 5).until(
@@ -190,9 +181,8 @@ def test_04_technician_cannot_access_manager_dashboard(driver):
     assert "don't have access" in error.text
 
 
-# ---------------------------------------------------------------------
 # 5-7: The core alert flow, driven purely through the UI
-# ---------------------------------------------------------------------
+
 def test_05_healthy_reading_shows_success_no_alert(driver):
     login_as_iot_engineer(driver)
     submit_reading(driver, equipment_id="MRI-SEL-HEALTHY", cycle="5")
@@ -222,9 +212,8 @@ def test_07_degraded_reading_appears_in_telemetry_table(driver):
     wait_for_text_in_element(driver, "telemetry-table", "MRI-SEL-TABLECHECK")
 
 
-# ---------------------------------------------------------------------
 # 8: Manager dashboard reflects the alert raised above
-# ---------------------------------------------------------------------
+
 def test_08_manager_dashboard_shows_model_metrics_and_alert(driver):
     login_as_manager(driver)
     panel = WebDriverWait(driver, 5).until(
@@ -235,9 +224,8 @@ def test_08_manager_dashboard_shows_model_metrics_and_alert(driver):
     assert "scheduled" in maintenance_table.text or "completed" in maintenance_table.text
 
 
-# ---------------------------------------------------------------------
 # 9-10: Technician completes an assigned work order end-to-end
-# ---------------------------------------------------------------------
+
 def test_09_technician_sees_assigned_work_order(driver):
     # first, guarantee at least one alert exists for the MRI technician
     login_as_iot_engineer(driver)
